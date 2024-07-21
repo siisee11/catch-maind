@@ -8,7 +8,10 @@ import { nanoid } from 'nanoid'
 import { create } from 'zustand'
 
 const CATETORIES = [
-  'Food and Drink',
+  'Korean Food',
+  'American Food',
+  'Food',
+  'Drink',
   'Film',
   'Geography',
   'Sports',

@@ -54,7 +54,12 @@ export async function createKeyword(category: string): Promise<KeywordResult> {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
   const model = genAI.getGenerativeModel({
     model: 'gemini-1.5-flash',
-    generationConfig: { responseMimeType: 'application/json', temperature: 2 }
+    generationConfig: {
+      responseMimeType: 'application/json',
+      temperature: 1,
+      topK: 64,
+      topP: 1
+    }
   })
   const prompt = `I want to do 'picionary' game with my friends. 
   Create one keyword of ${category}. 
@@ -71,6 +76,7 @@ export async function createKeyword(category: string): Promise<KeywordResult> {
     }
   }
 }`
+  console.log('prompt', prompt)
   const result = await model.generateContent([prompt])
   const res = JSON.parse(result.response.text()) as KeywordResult
   return res
