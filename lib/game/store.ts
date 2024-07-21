@@ -50,6 +50,9 @@ interface GameState {
   userDrawingBase64?: string
   guessingIntervals?: NodeJS.Timeout[]
 
+  gameTimer?: NodeJS.Timeout
+  remainingTimer?: NodeJS.Timeout
+  remainingTime: number
   keyword: string
   status: GameStatus
 
@@ -119,19 +122,35 @@ export const useGameStore = create<GameState>()(
         }
       ],
       keyword: '',
+      remainingTime: 0,
       status: 'not-started',
       updateDrawing: (base64: string) => {
         set({ userDrawingBase64: base64 })
       },
 
       prepare: async () => {
-        set({ status: 'preparing' })
+        set({ status: 'preparing', remainingTime: 180 })
         clearGuessingIntervals()
         const category =
           CATETORIES[Math.floor(Math.random() * CATETORIES.length)]
         const res = await createKeyword(category)
         set({ keyword: res.properties.keyword.ko, status: 'ready-to-play' })
         get().play()
+
+        // Initialize the game timer(3 minutes), after the time call finish
+        const timer = setTimeout(() => {
+          get().finish()
+        }, 180000)
+        // Start the game timer
+        const interval = setInterval(() => {
+          set(state => {
+            return { remainingTime: state.remainingTime - 1 }
+          })
+        }, 1000)
+        set({
+          gameTimer: timer,
+          remainingTimer: interval
+        })
       },
       play: async () => {
         set({ status: 'playing' })
@@ -197,10 +216,16 @@ export const useGameStore = create<GameState>()(
         }, 2000)
       },
       finish: () => {
+        get().gameTimer && clearTimeout(get().gameTimer)
+        get().remainingTimer && clearTimeout(get().remainingTimer)
+        set({
+          gameTimer: undefined,
+          remainingTimer: undefined
+        })
         clearGuessingIntervals()
         clearParticipantsMessages()
 
-        set({ status: 'finished' })
+        set({ status: 'finished', remainingTime: 0 })
       }
     }
   }

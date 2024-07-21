@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import { TbPlayerTrackNextFilled } from 'react-icons/tb'
 import { FaPen, FaEraser } from 'react-icons/fa6'
 import { IoMdRefresh } from 'react-icons/io'
 import {
@@ -13,12 +14,15 @@ import { ReactSketchCanvas, ReactSketchCanvasRef } from 'react-sketch-canvas'
 import { useGameStore } from '@/lib/game/store'
 
 export function DrawingScreen() {
-  const { play, updateDrawing, keyword, finish } = useGameStore(state => ({
-    keyword: state.keyword,
-    play: state.play,
-    finish: state.finish,
-    updateDrawing: state.updateDrawing
-  }))
+  const { play, updateDrawing, keyword, finish, remainingTime, prepareNext } =
+    useGameStore(state => ({
+      keyword: state.keyword,
+      play: state.play,
+      finish: state.finish,
+      updateDrawing: state.updateDrawing,
+      remainingTime: state.remainingTime,
+      prepareNext: state.prepareNext
+    }))
   const canvasRef = React.useRef<ReactSketchCanvasRef>(null)
   const [strokeWidth, setStrokeWidth] = useState(5)
   const [eraserWidth, setEraserWidth] = useState(10)
@@ -82,6 +86,9 @@ export function DrawingScreen() {
   return (
     <div className="flex flex-col gap-2 rounded-lg border bg-background p-8">
       <div className="flex flex-row gap-2 justify-center rounded-lg border bg-background p-4">
+        남은 시간: <span className="font-semibold">{remainingTime}(초)</span>
+      </div>
+      <div className="flex flex-row gap-2 justify-center rounded-lg border bg-background p-4">
         제시어: <span className="font-semibold">{keyword}</span>
       </div>
       <div className="flex flex-row gap-2 rounded-lg border bg-background p-1">
@@ -127,13 +134,13 @@ export function DrawingScreen() {
         eraserWidth={strokeWidth}
       />
       <div className="flex flex-row gap-2 rounded-lg border bg-background p-1">
-        <Button variant="ghost" size="icon" onClick={play}>
-          <IconArrowRight />
-          <span className="sr-only">Play</span>
-        </Button>
         <Button variant="ghost" size="icon" onClick={onCopy}>
           {isCopied ? <IconCheck /> : <IconCopy />}
           <span className="sr-only">Copy Image</span>
+        </Button>
+        <Button variant="ghost" size="icon" onClick={prepareNext}>
+          <TbPlayerTrackNextFilled />
+          <span className="sr-only">Next</span>
         </Button>
         <Button variant="ghost" size="icon" onClick={finish}>
           <IconClose />
