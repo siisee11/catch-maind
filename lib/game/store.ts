@@ -1,4 +1,9 @@
-import { createKeyword, submitUserDrawing } from '@/lib/game/actions'
+import {
+  createKeyword,
+  guess,
+  isGuessResult,
+  isMessageResult
+} from '@/lib/game/actions'
 import { nanoid } from 'nanoid'
 import { create } from 'zustand'
 
@@ -20,6 +25,13 @@ export type Participant = {
   name: string
   avatarUrl: string
   message?: string
+  description?: string
+  creativity: number /// higher -> more creative (0-2)
+  score: number
+
+  isCorrect: boolean
+
+  intervalId?: NodeJS.Timeout
 }
 
 export const GAME_STATUS = {
@@ -27,6 +39,7 @@ export const GAME_STATUS = {
   PREPARING: 'preparing',
   READY_TO_PLAY: 'ready-to-play',
   PLAYING: 'playing',
+  PREPARING_NEXT: 'preparing-next',
   FINISHED: 'finished'
 } as const
 
@@ -35,77 +48,166 @@ export type GameStatus = (typeof GAME_STATUS)[keyof typeof GAME_STATUS]
 interface GameState {
   participants: Participant[]
   userDrawingBase64?: string
-  guessingInterval?: NodeJS.Timeout
+  guessingIntervals?: NodeJS.Timeout[]
 
   keyword: string
   status: GameStatus
 
   prepare: () => void
   play: () => void
+  prepareNext: () => void
   finish: () => void
 
   updateDrawing: (base64: string) => void
 }
 
 export const useGameStore = create<GameState>()(
-  (set, get) => ({
-    participants: [
-      {
-        id: nanoid(),
-        name: 'Tonald Drump',
-        avatarUrl: 'https://github.com/shadcn.png'
-      },
-      {
-        id: nanoid(),
-        name: 'Melon Musk',
-        avatarUrl: 'https://github.com/shadcn.png'
-      }
-    ],
-    keyword: '',
-    status: 'not-started',
-    updateDrawing: (base64: string) => {
-      set({ userDrawingBase64: base64 })
-    },
-    prepare: async () => {
-      set({ status: 'preparing' })
-      const category = CATETORIES[Math.floor(Math.random() * CATETORIES.length)]
-      const res = await createKeyword(category)
-      set({ keyword: res.properties.keyword.ko, status: 'ready-to-play' })
-      get().play()
-    },
-    play: async () => {
-      set({ status: 'playing' })
-      const existingInterval = get().guessingInterval
-      if (existingInterval) {
-        clearInterval(existingInterval)
-      }
-      const guess = async () => {
-        const base64 = get().userDrawingBase64
-        if (!base64) return
-        const res = await submitUserDrawing(base64)
-        set(state => {
-          const participants = [...state.participants]
-          const guesser =
-            participants[Math.floor(Math.random() * participants.length)]
-          participants.forEach(participant => {
-            if (participant === guesser) {
-              participant.message = res.guessResult.properties.answer.ko
+  (set, get) => {
+    const updateParticipant = (
+      participantId: string,
+      message: string,
+      isCorrect: boolean
+    ) =>
+      set(state => {
+        const participants = [...state.participants]
+        participants.forEach(p => {
+          if (p.id === participantId) {
+            p.message = message
+            if (isCorrect) {
+              p.isCorrect = isCorrect
+              p.score = p.score + 1
             }
-          })
-          return { participants }
+          }
         })
+        return { participants }
+      })
+
+    return {
+      participants: [
+        {
+          id: nanoid(),
+          name: 'Tonald Drump',
+          avatarUrl:
+            'https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?&w=128&h=128&dpr=2&q=80',
+          creativity: 0,
+          score: 0,
+          isCorrect: false
+        },
+        {
+          id: nanoid(),
+          name: 'Melon Musk',
+          avatarUrl: 'https://github.com/shadcn.png',
+          creativity: 2,
+          score: 0,
+          isCorrect: false
+        }
+      ],
+      keyword: '',
+      status: 'not-started',
+      updateDrawing: (base64: string) => {
+        set({ userDrawingBase64: base64 })
+      },
+
+      prepare: async () => {
+        set({ status: 'preparing' })
+        const intervals = get().guessingIntervals
+        if (intervals?.length ?? 0 > 0) {
+          intervals?.forEach(clearInterval)
+        }
+        const category =
+          CATETORIES[Math.floor(Math.random() * CATETORIES.length)]
+        const res = await createKeyword(category)
+        set({ keyword: res.properties.keyword.ko, status: 'ready-to-play' })
+        get().play()
+      },
+      play: async () => {
+        set({ status: 'playing' })
+
+        // Function to handle the guessing logic for a participant
+        const guessForParticipant = async (participant: Participant) => {
+          const base64 = get().userDrawingBase64
+          if (!base64) return
+          const { guessResult } = await guess(participant, base64)
+
+          if (isGuessResult(guessResult) && guessResult.type === 'guess') {
+            const answer = guessResult.properties.answer.ko
+            const isAnswerCorrect = answer === get().keyword
+            updateParticipant(participant.id, answer, isAnswerCorrect)
+            if (isAnswerCorrect) {
+              set(state => {
+                const participants = [...state.participants]
+                participants.forEach(p => {
+                  if (p === participant) {
+                    p.score += 1
+                    p.isCorrect = true
+                  }
+                })
+                return { participants }
+              })
+            }
+
+            if (isAnswerCorrect) {
+              get().prepareNext()
+            }
+          }
+
+          if (isMessageResult(guessResult) && guessResult.type === 'message') {
+            const message = guessResult.properties.message.ko
+            updateParticipant(participant.id, message, false)
+          }
+        }
+
+        //   Schedule each participant's guessing with a random backoff time
+        const participants = get().participants
+        participants.forEach(participant => {
+          const randomBackoff = Math.floor(Math.random() * 10000) + 5000
+          const interval = setInterval(
+            () => guessForParticipant(participant),
+            randomBackoff
+          )
+          // Save the interval id for later clearing if needed
+          participant.intervalId = interval
+        })
+
+        // Save all intervals in state for later clearing if needed
+        set({
+          guessingIntervals: participants
+            .map(p => p.intervalId)
+            .filter((e): e is Exclude<typeof e, undefined> => e !== undefined)
+        })
+      },
+      prepareNext: async () => {
+        set({ status: 'preparing-next' })
+        const intervals = get().guessingIntervals
+        if (intervals?.length ?? 0 > 0) {
+          intervals?.forEach(clearInterval)
+        }
+        const category =
+          CATETORIES[Math.floor(Math.random() * CATETORIES.length)]
+        const res = await createKeyword(category)
+        setTimeout(() => {
+          set({ keyword: res.properties.keyword.ko, status: 'ready-to-play' })
+          set(state => {
+            const participants = [...state.participants]
+            participants.forEach(p => {
+              p.isCorrect = false
+              p.message = undefined
+            })
+            return { participants }
+          })
+
+          get().play()
+        }, 2000)
+      },
+      finish: () => {
+        const intervals = get().guessingIntervals
+        if (intervals?.length ?? 0 > 0) {
+          intervals?.forEach(clearInterval)
+        }
+        set({ status: 'finished' })
       }
-      const interval = setInterval(guess, 3000)
-      set({ guessingInterval: interval })
-    },
-    finish: () => {
-      const interval = get().guessingInterval
-      if (interval) {
-        clearInterval(interval)
-      }
-      set({ status: 'finished' })
     }
-  })
+  }
   // {
   //   name: 'game-storage'
   // }

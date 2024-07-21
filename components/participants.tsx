@@ -13,13 +13,7 @@ export function Participants({ session }: ParticipantsProp) {
   return (
     <div className="flex flex-col relative px-4 gap-4">
       {participants.map(participant => (
-        <ParticipantCard
-          key={participant.id}
-          id={participant.id}
-          name={participant.name}
-          avatarUrl={participant.avatarUrl}
-          message={participant.message}
-        />
+        <ParticipantCard key={participant.id} {...participant} />
       ))}
       <div className="h-full" />
     </div>

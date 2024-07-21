@@ -1,15 +1,21 @@
 import { Button } from '@/components/ui/button'
 import { FaPen, FaEraser } from 'react-icons/fa6'
-import { IconArrowRight, IconCheck, IconCopy } from '@/components/ui/icons'
+import {
+  IconArrowRight,
+  IconCheck,
+  IconClose,
+  IconCopy
+} from '@/components/ui/icons'
 import React, { ChangeEvent, useState } from 'react'
 
 import { ReactSketchCanvas, ReactSketchCanvasRef } from 'react-sketch-canvas'
 import { useGameStore } from '@/lib/game/store'
 
 export function DrawingScreen() {
-  const { play, updateDrawing, keyword } = useGameStore(state => ({
+  const { play, updateDrawing, keyword, finish } = useGameStore(state => ({
     keyword: state.keyword,
     play: state.play,
+    finish: state.finish,
     updateDrawing: state.updateDrawing
   }))
   const canvasRef = React.useRef<ReactSketchCanvasRef>(null)
@@ -71,11 +77,9 @@ export function DrawingScreen() {
   return (
     <div className="w-full max-w-4xl px-4">
       <div className="flex flex-col gap-2 rounded-lg border bg-background p-8">
-        <div className="flex flex-row gap-2 rounded-lg border bg-background p-4">
+        <div className="flex flex-row gap-2 justify-center rounded-lg border bg-background p-4">
           제시어: <span className="font-semibold">{keyword}</span>
         </div>
-
-        <h1 className="text-lg font-semibold">Draw a sketch to get started</h1>
         <div className="flex flex-row gap-2 rounded-lg border bg-background p-1">
           <Button
             type="button"
@@ -115,14 +119,20 @@ export function DrawingScreen() {
           strokeWidth={strokeWidth}
           eraserWidth={strokeWidth}
         />
-        <Button variant="ghost" size="icon" onClick={play}>
-          <IconArrowRight />
-          <span className="sr-only">Play</span>
-        </Button>
-        <Button variant="ghost" size="icon" onClick={onCopy}>
-          {isCopied ? <IconCheck /> : <IconCopy />}
-          <span className="sr-only">Copy Image</span>
-        </Button>
+        <div className="flex flex-row gap-2 rounded-lg border bg-background p-1">
+          <Button variant="ghost" size="icon" onClick={play}>
+            <IconArrowRight />
+            <span className="sr-only">Play</span>
+          </Button>
+          <Button variant="ghost" size="icon" onClick={onCopy}>
+            {isCopied ? <IconCheck /> : <IconCopy />}
+            <span className="sr-only">Copy Image</span>
+          </Button>
+          <Button variant="ghost" size="icon" onClick={finish}>
+            <IconClose />
+            <span className="sr-only">Finish</span>
+          </Button>
+        </div>
       </div>
     </div>
   )

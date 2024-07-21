@@ -6,11 +6,12 @@ import { useEffect, useState } from 'react'
 import { Message, Session } from '@/lib/types'
 import { usePathname, useRouter } from 'next/navigation'
 import { useScrollAnchor } from '@/lib/hooks/use-scroll-anchor'
-import { DrawingScreen } from '@/components/drawing-screen'
 import { Participants } from '@/components/participants'
 import { GameStatus, useGameStore } from '@/lib/game/store'
 import { GamePreparingScreen } from '@/components/game-preparing-screen'
 import { GameNotStartedScreen } from '@/components/game-not-started'
+import { DrawingScreen } from '@/components/game-drawing-screen'
+import { GameFinishedScreen } from '@/components/game-finished-screen'
 
 export interface GameProps extends React.ComponentProps<'div'> {
   id?: string
@@ -34,7 +35,8 @@ export function Game({ id, className, session }: GameProps) {
     preparing: <GamePreparingScreen />,
     'ready-to-play': <GamePreparingScreen />,
     playing: <DrawingScreen />,
-    finished: <></>
+    'preparing-next': <GamePreparingScreen />,
+    finished: <GameFinishedScreen />
   }
 
   return (

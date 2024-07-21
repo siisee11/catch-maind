@@ -1,6 +1,6 @@
 'use server'
 
-import { BotMessage } from '@/components/stocks'
+import { Participant } from '@/lib/game/store'
 
 import { nanoid } from '@/lib/utils'
 import { GoogleGenerativeAI, InlineDataPart } from '@google/generative-ai'
@@ -25,13 +25,36 @@ export type GuessResult = {
   }
 }
 
+export type MessageResult = {
+  type: 'message'
+  properties: {
+    message: {
+      ko: string
+      en: string
+    }
+  }
+}
+
+// FIXME: why this guard not working
+export const isGuessResult = (
+  result: GuessResult | MessageResult
+): result is GuessResult => {
+  return result.type === 'guess'
+}
+
+export const isMessageResult = (
+  result: GuessResult | MessageResult
+): result is MessageResult => {
+  return result.type === 'message'
+}
+
 export async function createKeyword(category: string): Promise<KeywordResult> {
   'use server'
 
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
   const model = genAI.getGenerativeModel({
     model: 'gemini-1.5-flash',
-    generationConfig: { responseMimeType: 'application/json' }
+    generationConfig: { responseMimeType: 'application/json', temperature: 2 }
   })
   const prompt = `I want to do 'picionary' game with my friends. Create one keyword related to ${category}. 
   The keyword should be a single word and draw-able.
@@ -52,17 +75,27 @@ export async function createKeyword(category: string): Promise<KeywordResult> {
   return res
 }
 
-export async function submitUserDrawing(
+export async function guess(
+  participant: Participant,
   drawingBase64: string
-): Promise<{ id: string; guessResult: GuessResult }> {
+): Promise<{ id: string; guessResult: GuessResult | MessageResult }> {
   'use server'
 
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
   const model = genAI.getGenerativeModel({
     model: 'gemini-1.5-flash',
-    generationConfig: { responseMimeType: 'application/json' }
+    generationConfig: {
+      responseMimeType: 'application/json',
+      temperature: participant.creativity ?? 1
+    }
   })
-  const prompt = `Guess the drawing. Give me just a single answer. using this JSON schema:
+  const prompt = `Guess the given drawing. Give me just a single answer. 
+
+If you think the drawing is too hard to guess, you can ask for a hint or give direct feedback to the drawer.
+  
+using this JSON schema (object including type and properties):
+
+If you guess the answer:
 { "type": "guess",
   "properties": {
     "answer": {
@@ -70,7 +103,17 @@ export async function submitUserDrawing(
         "en": "your answer string in English",
     }
   }
-}`
+}
+  
+If you ask for a hint or give a feedback:
+{ "type": "message" 
+  "properties": {
+    "message": {
+        "ko": "your message in Korean",
+        "en": "your message in English"
+    }
+}
+`
   const imagePart: InlineDataPart = {
     inlineData: {
       data: drawingBase64,
@@ -79,7 +122,11 @@ export async function submitUserDrawing(
   }
 
   const result = await model.generateContent([prompt, imagePart])
-  const guessResult = JSON.parse(result.response.text()) as GuessResult
+  const guessResult = JSON.parse(result.response.text()) as
+    | GuessResult
+    | MessageResult
+
+  console.log(guessResult)
 
   return {
     id: nanoid(),
