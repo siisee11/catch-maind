@@ -55,7 +55,7 @@ export function DrawingScreen() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4">
+    <div className="w-full max-w-4xl px-4">
       <div className="flex flex-col gap-2 rounded-lg border bg-background p-8">
         <h1 className="text-lg font-semibold">Draw a sketch to get started</h1>
         <div className="flex flex-row gap-2 rounded-lg border bg-background p-1">
