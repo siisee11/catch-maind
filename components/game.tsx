@@ -46,13 +46,15 @@ export function Game({ id, className, session }: GameProps) {
     >
       <div
         className={cn(
-          'flex flex-row justify-center pb-[200px] pt-4 md:pt-10',
+          'flex flex-row justify-center pb-[100px] pt-4 md:pt-10',
           className
         )}
         ref={messagesRef}
       >
-        <Participants />
-        {statusToComponent[gameStatus]}
+        {gameStatus !== 'not-started' ? <Participants /> : null}
+        <div className="size-full max-w-4xl px-4">
+          {statusToComponent[gameStatus]}
+        </div>
         <div className="size-px" ref={visibilityRef} />
       </div>
     </div>

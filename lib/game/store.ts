@@ -82,6 +82,22 @@ export const useGameStore = create<GameState>()(
         return { participants }
       })
 
+    const clearGuessingIntervals = () => {
+      const intervals = get().guessingIntervals
+      if (intervals?.length ?? 0 > 0) {
+        intervals?.forEach(clearInterval)
+      }
+    }
+
+    const clearParticipantsMessages = () =>
+      set(state => {
+        const participants = [...state.participants]
+        participants.forEach(p => {
+          p.message = undefined
+        })
+        return { participants }
+      })
+
     return {
       participants: [
         {
@@ -110,10 +126,7 @@ export const useGameStore = create<GameState>()(
 
       prepare: async () => {
         set({ status: 'preparing' })
-        const intervals = get().guessingIntervals
-        if (intervals?.length ?? 0 > 0) {
-          intervals?.forEach(clearInterval)
-        }
+        clearGuessingIntervals()
         const category =
           CATETORIES[Math.floor(Math.random() * CATETORIES.length)]
         const res = await createKeyword(category)
@@ -122,30 +135,18 @@ export const useGameStore = create<GameState>()(
       },
       play: async () => {
         set({ status: 'playing' })
+        clearParticipantsMessages()
 
         // Function to handle the guessing logic for a participant
         const guessForParticipant = async (participant: Participant) => {
           const base64 = get().userDrawingBase64
           if (!base64) return
           const { guessResult } = await guess(participant, base64)
-
+          if (get().status !== 'playing') return
           if (isGuessResult(guessResult) && guessResult.type === 'guess') {
             const answer = guessResult.properties.answer.ko
             const isAnswerCorrect = answer === get().keyword
             updateParticipant(participant.id, answer, isAnswerCorrect)
-            if (isAnswerCorrect) {
-              set(state => {
-                const participants = [...state.participants]
-                participants.forEach(p => {
-                  if (p === participant) {
-                    p.score += 1
-                    p.isCorrect = true
-                  }
-                })
-                return { participants }
-              })
-            }
-
             if (isAnswerCorrect) {
               get().prepareNext()
             }
@@ -178,10 +179,7 @@ export const useGameStore = create<GameState>()(
       },
       prepareNext: async () => {
         set({ status: 'preparing-next' })
-        const intervals = get().guessingIntervals
-        if (intervals?.length ?? 0 > 0) {
-          intervals?.forEach(clearInterval)
-        }
+        clearGuessingIntervals()
         const category =
           CATETORIES[Math.floor(Math.random() * CATETORIES.length)]
         const res = await createKeyword(category)
@@ -191,7 +189,6 @@ export const useGameStore = create<GameState>()(
             const participants = [...state.participants]
             participants.forEach(p => {
               p.isCorrect = false
-              p.message = undefined
             })
             return { participants }
           })
@@ -200,10 +197,9 @@ export const useGameStore = create<GameState>()(
         }, 2000)
       },
       finish: () => {
-        const intervals = get().guessingIntervals
-        if (intervals?.length ?? 0 > 0) {
-          intervals?.forEach(clearInterval)
-        }
+        clearGuessingIntervals()
+        clearParticipantsMessages()
+
         set({ status: 'finished' })
       }
     }

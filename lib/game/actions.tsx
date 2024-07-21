@@ -56,8 +56,11 @@ export async function createKeyword(category: string): Promise<KeywordResult> {
     model: 'gemini-1.5-flash',
     generationConfig: { responseMimeType: 'application/json', temperature: 2 }
   })
-  const prompt = `I want to do 'picionary' game with my friends. Create one keyword related to ${category}. 
+  const prompt = `I want to do 'picionary' game with my friends. 
+  Create one keyword of ${category}. 
   The keyword should be a single word and draw-able.
+  Be creative!
+  List 10 keywords that you can think of, and choose one of them.
 
   your answer should be JSON object that has type and properties. using this JSON schema:
 { "type": "keyword",
@@ -70,8 +73,6 @@ export async function createKeyword(category: string): Promise<KeywordResult> {
 }`
   const result = await model.generateContent([prompt])
   const res = JSON.parse(result.response.text()) as KeywordResult
-  console.log(res)
-
   return res
 }
 
@@ -125,8 +126,6 @@ If you ask for a hint or give a feedback:
   const guessResult = JSON.parse(result.response.text()) as
     | GuessResult
     | MessageResult
-
-  console.log(guessResult)
 
   return {
     id: nanoid(),

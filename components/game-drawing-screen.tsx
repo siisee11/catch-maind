@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { FaPen, FaEraser } from 'react-icons/fa6'
+import { IoMdRefresh } from 'react-icons/io'
 import {
   IconArrowRight,
   IconCheck,
@@ -47,6 +48,10 @@ export function DrawingScreen() {
     canvasRef.current?.eraseMode(false)
   }
 
+  const handleEraseAllClick = () => {
+    canvasRef.current?.resetCanvas()
+  }
+
   const handleStrokeWidthChange = (event: ChangeEvent<HTMLInputElement>) => {
     setStrokeWidth(+event.target.value)
   }
@@ -75,64 +80,65 @@ export function DrawingScreen() {
   }
 
   return (
-    <div className="w-full max-w-4xl px-4">
-      <div className="flex flex-col gap-2 rounded-lg border bg-background p-8">
-        <div className="flex flex-row gap-2 justify-center rounded-lg border bg-background p-4">
-          제시어: <span className="font-semibold">{keyword}</span>
-        </div>
-        <div className="flex flex-row gap-2 rounded-lg border bg-background p-1">
-          <Button
-            type="button"
-            variant="ghost"
-            disabled={!eraseMode}
-            onClick={handlePenClick}
-          >
-            <FaPen />
-          </Button>
-          <Button
-            variant="ghost"
-            type="button"
-            disabled={eraseMode}
-            onClick={handleEraserClick}
-          >
-            <FaEraser />
-          </Button>
-          <input
-            type="range"
-            className="form-range"
-            min="1"
-            max="20"
-            step="1"
-            id="strokeWidth"
-            value={eraseMode ? eraserWidth : strokeWidth}
-            onChange={
-              eraseMode ? handleEraserWidthChange : handleStrokeWidthChange
-            }
-          />
-        </div>
-        <ReactSketchCanvas
-          ref={canvasRef}
-          width="100%"
-          height="800px"
-          canvasColor="transparent"
-          strokeColor="#ffffff"
-          strokeWidth={strokeWidth}
-          eraserWidth={strokeWidth}
+    <div className="flex flex-col gap-2 rounded-lg border bg-background p-8">
+      <div className="flex flex-row gap-2 justify-center rounded-lg border bg-background p-4">
+        제시어: <span className="font-semibold">{keyword}</span>
+      </div>
+      <div className="flex flex-row gap-2 rounded-lg border bg-background p-1">
+        <Button
+          type="button"
+          variant="ghost"
+          disabled={!eraseMode}
+          onClick={handlePenClick}
+        >
+          <FaPen />
+        </Button>
+        <Button
+          variant="ghost"
+          type="button"
+          disabled={eraseMode}
+          onClick={handleEraserClick}
+        >
+          <FaEraser />
+        </Button>
+        <input
+          type="range"
+          className="form-range"
+          min="1"
+          max="20"
+          step="1"
+          id="strokeWidth"
+          value={eraseMode ? eraserWidth : strokeWidth}
+          onChange={
+            eraseMode ? handleEraserWidthChange : handleStrokeWidthChange
+          }
         />
-        <div className="flex flex-row gap-2 rounded-lg border bg-background p-1">
-          <Button variant="ghost" size="icon" onClick={play}>
-            <IconArrowRight />
-            <span className="sr-only">Play</span>
-          </Button>
-          <Button variant="ghost" size="icon" onClick={onCopy}>
-            {isCopied ? <IconCheck /> : <IconCopy />}
-            <span className="sr-only">Copy Image</span>
-          </Button>
-          <Button variant="ghost" size="icon" onClick={finish}>
-            <IconClose />
-            <span className="sr-only">Finish</span>
-          </Button>
-        </div>
+        <Button variant="ghost" type="button" onClick={handleEraseAllClick}>
+          <IoMdRefresh />
+        </Button>
+      </div>
+      <ReactSketchCanvas
+        ref={canvasRef}
+        width="100%"
+        height="600px"
+        canvasColor="transparent"
+        strokeColor="#ffffff"
+        strokeWidth={strokeWidth}
+        eraserWidth={strokeWidth}
+      />
+      <div className="flex flex-row gap-2 rounded-lg border bg-background p-1">
+        <Button variant="ghost" size="icon" onClick={play}>
+          <IconArrowRight />
+          <span className="sr-only">Play</span>
+        </Button>
+        <Button variant="ghost" size="icon" onClick={onCopy}>
+          {isCopied ? <IconCheck /> : <IconCopy />}
+          <span className="sr-only">Copy Image</span>
+        </Button>
+        <Button variant="ghost" size="icon" onClick={finish}>
+          <IconClose />
+          <span className="sr-only">Finish</span>
+        </Button>
       </div>
     </div>
   )
