@@ -8,6 +8,9 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useScrollAnchor } from '@/lib/hooks/use-scroll-anchor'
 import { DrawingScreen } from '@/components/drawing-screen'
 import { Participants } from '@/components/participants'
+import { GameStatus, useGameStore } from '@/lib/game/store'
+import { GamePreparingScreen } from '@/components/game-preparing-screen'
+import { GameNotStartedScreen } from '@/components/game-not-started'
 
 export interface GameProps extends React.ComponentProps<'div'> {
   id?: string
@@ -15,8 +18,7 @@ export interface GameProps extends React.ComponentProps<'div'> {
 }
 
 export function Game({ id, className, session }: GameProps) {
-  const router = useRouter()
-  const path = usePathname()
+  const gameStatus = useGameStore(state => state.status)
 
   const [_, setNewGameId] = useLocalStorage('newGameId', id)
 
@@ -26,6 +28,14 @@ export function Game({ id, className, session }: GameProps) {
 
   const { messagesRef, scrollRef, visibilityRef, isAtBottom, scrollToBottom } =
     useScrollAnchor()
+
+  const statusToComponent: Record<GameStatus, React.ReactElement> = {
+    'not-started': <GameNotStartedScreen />,
+    preparing: <GamePreparingScreen />,
+    'ready-to-play': <GamePreparingScreen />,
+    playing: <DrawingScreen />,
+    finished: <></>
+  }
 
   return (
     <div
@@ -40,7 +50,7 @@ export function Game({ id, className, session }: GameProps) {
         ref={messagesRef}
       >
         <Participants />
-        <DrawingScreen />
+        {statusToComponent[gameStatus]}
         <div className="size-px" ref={visibilityRef} />
       </div>
     </div>

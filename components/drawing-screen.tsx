@@ -1,15 +1,14 @@
 import { Button } from '@/components/ui/button'
 import { FaPen, FaEraser } from 'react-icons/fa6'
 import { IconArrowRight, IconCheck, IconCopy } from '@/components/ui/icons'
-import { submitUserDrawing } from '@/lib/game/actions'
 import React, { ChangeEvent, useState } from 'react'
 
 import { ReactSketchCanvas, ReactSketchCanvasRef } from 'react-sketch-canvas'
 import { useGameStore } from '@/lib/game/store'
-import { debounce } from 'es-toolkit'
 
 export function DrawingScreen() {
-  const { play, updateDrawing } = useGameStore(state => ({
+  const { play, updateDrawing, keyword } = useGameStore(state => ({
+    keyword: state.keyword,
     play: state.play,
     updateDrawing: state.updateDrawing
   }))
@@ -66,15 +65,16 @@ export function DrawingScreen() {
       link.click()
       document.body.removeChild(link)
       setIsCopied(true)
-      const base64 = dataURLToBase64(dataUrl)
-      const res = await submitUserDrawing(base64)
-      console.log(res)
     }
   }
 
   return (
     <div className="w-full max-w-4xl px-4">
       <div className="flex flex-col gap-2 rounded-lg border bg-background p-8">
+        <div className="flex flex-row gap-2 rounded-lg border bg-background p-4">
+          제시어: <span className="font-semibold">{keyword}</span>
+        </div>
+
         <h1 className="text-lg font-semibold">Draw a sketch to get started</h1>
         <div className="flex flex-row gap-2 rounded-lg border bg-background p-1">
           <Button
