@@ -1,5 +1,3 @@
-import { SidebarDesktop } from '@/components/sidebar-desktop'
-
 interface GameLayoutProps {
   children: React.ReactNode
 }

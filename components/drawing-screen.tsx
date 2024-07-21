@@ -1,18 +1,36 @@
 import { Button } from '@/components/ui/button'
 import { FaPen, FaEraser } from 'react-icons/fa6'
-import { IconCheck, IconCopy } from '@/components/ui/icons'
+import { IconArrowRight, IconCheck, IconCopy } from '@/components/ui/icons'
 import { submitUserDrawing } from '@/lib/game/actions'
 import React, { ChangeEvent, useState } from 'react'
 
 import { ReactSketchCanvas, ReactSketchCanvasRef } from 'react-sketch-canvas'
+import { useGameStore } from '@/lib/game/store'
+import { debounce } from 'es-toolkit'
 
 export function DrawingScreen() {
+  const { play, updateDrawing } = useGameStore(state => ({
+    play: state.play,
+    updateDrawing: state.updateDrawing
+  }))
   const canvasRef = React.useRef<ReactSketchCanvasRef>(null)
   const [strokeWidth, setStrokeWidth] = useState(5)
   const [eraserWidth, setEraserWidth] = useState(10)
   const [eraseMode, setEraseMode] = React.useState(false)
 
   const [isCopied, setIsCopied] = React.useState(false)
+
+  React.useEffect(() => {
+    const fn = async () => {
+      const dataUrl = await canvasRef.current?.exportImage('png')
+      if (dataUrl) {
+        const base64 = dataURLToBase64(dataUrl)
+        updateDrawing(base64)
+      }
+    }
+    const interval = setInterval(fn, 3000)
+    return () => clearInterval(interval)
+  }, [])
 
   const handleEraserClick = () => {
     setEraseMode(true)
@@ -97,6 +115,10 @@ export function DrawingScreen() {
           strokeWidth={strokeWidth}
           eraserWidth={strokeWidth}
         />
+        <Button variant="ghost" size="icon" onClick={play}>
+          <IconArrowRight />
+          <span className="sr-only">Play</span>
+        </Button>
         <Button variant="ghost" size="icon" onClick={onCopy}>
           {isCopied ? <IconCheck /> : <IconCopy />}
           <span className="sr-only">Copy Image</span>

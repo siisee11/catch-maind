@@ -5,7 +5,19 @@ import { BotMessage } from '@/components/stocks'
 import { nanoid } from '@/lib/utils'
 import { GoogleGenerativeAI, InlineDataPart } from '@google/generative-ai'
 
-export async function submitUserDrawing(drawingBase64: string) {
+export type GuessResult = {
+  type: 'guess'
+  properties: {
+    answer: {
+      ko: string
+      en: string
+    }
+  }
+}
+
+export async function submitUserDrawing(
+  drawingBase64: string
+): Promise<{ id: string; guessResult: GuessResult }> {
   'use server'
 
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
@@ -22,8 +34,6 @@ export async function submitUserDrawing(drawingBase64: string) {
     }
   }
 }`
-  console.log('prompt', prompt)
-
   const imagePart: InlineDataPart = {
     inlineData: {
       data: drawingBase64,
@@ -32,10 +42,10 @@ export async function submitUserDrawing(drawingBase64: string) {
   }
 
   const result = await model.generateContent([prompt, imagePart])
-  console.log(result.response.text())
+  const guessResult = JSON.parse(result.response.text()) as GuessResult
 
   return {
     id: nanoid(),
-    display: <BotMessage content={result.response.text()} />
+    guessResult
   }
 }
