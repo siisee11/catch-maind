@@ -2,16 +2,15 @@
 
 import { cn } from '@/lib/utils'
 import { useLocalStorage } from '@/lib/hooks/use-local-storage'
-import { useEffect, useState } from 'react'
-import { Message, Session } from '@/lib/types'
-import { usePathname, useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import { Session } from '@/lib/types'
 import { useScrollAnchor } from '@/lib/hooks/use-scroll-anchor'
 import { Participants } from '@/components/participants'
 import { GameStatus, useGameStore } from '@/lib/game/store'
-import { GamePreparingScreen } from '@/components/game-preparing-screen'
-import { GameNotStartedScreen } from '@/components/game-not-started'
-import { DrawingScreen } from '@/components/game-drawing-screen'
-import { GameFinishedScreen } from '@/components/game-finished-screen'
+import { GamePreparingScreen } from '@/components/game/game-preparing-screen'
+import { GameNotStartedScreen } from '@/components/game/game-not-started'
+import { DrawingScreen } from '@/components/game/game-drawing-screen'
+import { GameFinishedScreen } from '@/components/game/game-finished-screen'
 
 export interface GameProps extends React.ComponentProps<'div'> {
   id?: string

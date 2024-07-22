@@ -2,12 +2,7 @@ import { Button } from '@/components/ui/button'
 import { TbPlayerTrackNextFilled } from 'react-icons/tb'
 import { FaPen, FaEraser } from 'react-icons/fa6'
 import { IoMdRefresh } from 'react-icons/io'
-import {
-  IconArrowRight,
-  IconCheck,
-  IconClose,
-  IconCopy
-} from '@/components/ui/icons'
+import { IconCheck, IconClose, IconCopy } from '@/components/ui/icons'
 import React, { ChangeEvent, useState } from 'react'
 
 import { ReactSketchCanvas, ReactSketchCanvasRef } from 'react-sketch-canvas'
