@@ -7,7 +7,7 @@ export const metadata = {
   title: 'Next.js AI Catch mind'
 }
 
-export default async function IndexPage() {
+export default async function GamePage() {
   const id = nanoid()
   const session = (await auth()) as Session
   return <Game id={id} session={session} />

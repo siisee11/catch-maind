@@ -9,7 +9,7 @@ import { ReactSketchCanvas, ReactSketchCanvasRef } from 'react-sketch-canvas'
 import { useGameStore } from '@/lib/game/store'
 
 export function DrawingScreen() {
-  const { play, updateDrawing, keyword, finish, remainingTime, prepareNext } =
+  const { updateDrawing, keyword, finish, remainingTime, prepareNext } =
     useGameStore(state => ({
       keyword: state.keyword,
       play: state.play,

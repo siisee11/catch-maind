@@ -1,9 +1,15 @@
-export const CatchMaindBannerImage = () => {
+export const CatchMaindBannerImage = ({
+  width = 525,
+  height = 354
+}: {
+  width?: number
+  height?: number
+}) => {
   return (
     <svg
       className="mx-auto"
-      width="525"
-      height="354"
+      width={width}
+      height={height}
       viewBox="0 0 525 354"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

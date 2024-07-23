@@ -40,17 +40,21 @@ export function Game({ id, className, session }: GameProps) {
 
   return (
     <div
-      className="group w-full overflow-auto pl-0 peer-[[data-state=open]]:lg:pl-[250px] peer-[[data-state=open]]:xl:pl-[300px]"
+      className="relative group w-full overflow-auto pl-0 peer-[[data-state=open]]:lg:pl-[250px] peer-[[data-state=open]]:xl:pl-[300px]
+      bg-gradient-to-r from-[#8B6BC2] to-[#3892DA]"
       ref={scrollRef}
     >
+      <div className="absolute inset-0 bg-black/75 z-0" />
       <div
         className={cn(
-          'flex flex-row justify-center pb-[100px] pt-4 md:pt-10',
+          'flex flex-row justify-center pb-[100px] pt-4 md:pt-10 z-10 relative',
           className
         )}
         ref={messagesRef}
       >
-        {gameStatus !== 'not-started' ? <Participants /> : null}
+        {gameStatus !== 'not-started' && gameStatus !== 'finished' ? (
+          <Participants />
+        ) : null}
         <div className="size-full max-w-4xl px-4">
           {statusToComponent[gameStatus]}
         </div>
