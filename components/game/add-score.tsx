@@ -9,12 +9,27 @@ import {
   CardContent
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { calculatePercentile } from '@/lib/firebase/leaderboard/actions'
+import { useGameStore } from '@/lib/game/store'
 import { Label } from '@radix-ui/react-dropdown-menu'
+import React from 'react'
 import { useState } from 'react'
 
 const AddScore: React.FC = () => {
+  const { totalScore } = useGameStore(state => ({
+    totalScore: state.totalScore
+  }))
   const [name, setName] = useState('')
-  const [score, setScore] = useState<number | string>(12000)
+  const [percentile, setPercentile] = useState<number | null>(null)
+
+  React.useEffect(() => {
+    const fetchPercentile = async () => {
+      const calculatedPercentile = await calculatePercentile(totalScore)
+      setPercentile(calculatedPercentile)
+    }
+
+    fetchPercentile()
+  }, [totalScore])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -23,10 +38,9 @@ const AddScore: React.FC = () => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ name, score: parseInt(score as string, 10) })
+      body: JSON.stringify({ name, score: totalScore })
     })
     setName('')
-    setScore('')
   }
 
   return (
@@ -43,8 +57,16 @@ const AddScore: React.FC = () => {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label>Your Score</Label>
-                <div className="text-2xl font-bold">{score}</div>
+                <div className="text-2xl font-bold">{totalScore}</div>
               </div>
+              {percentile !== null && (
+                <div className="flex items-center justify-between">
+                  <Label>Top </Label>
+                  <div className="text-2xl font-bold">
+                    {percentile.toFixed(2)}%
+                  </div>
+                </div>
+              )}
               <Label>Username</Label>
               <Input
                 type="text"

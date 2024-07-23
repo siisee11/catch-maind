@@ -59,6 +59,8 @@ interface GameState {
   keyword: string
   status: GameStatus
 
+  totalScore: number
+
   prepare: () => void
   play: () => void
   prepareNext: () => void
@@ -126,14 +128,15 @@ export const useGameStore = create<GameState>()(
       ],
       keyword: '',
       remainingTime: 0,
-      status: 'finished',
-      // status: 'not-started',
+      // status: 'finished',
+      status: 'not-started',
+      totalScore: 0,
       updateDrawing: (base64: string) => {
         set({ userDrawingBase64: base64 })
       },
 
       prepare: async () => {
-        set({ status: 'preparing', remainingTime: 180 })
+        set({ status: 'preparing', remainingTime: 180, totalScore: 0 })
         clearGuessingIntervals()
         const category =
           CATETORIES[Math.floor(Math.random() * CATETORIES.length)]
@@ -171,6 +174,9 @@ export const useGameStore = create<GameState>()(
             const isAnswerCorrect = answer === get().keyword
             updateParticipant(participant.id, answer, isAnswerCorrect)
             if (isAnswerCorrect) {
+              set({
+                totalScore: get().totalScore + 1
+              })
               get().prepareNext()
             }
           }
