@@ -11,7 +11,7 @@ export function Participants({ session }: ParticipantsProp) {
   const participants = useGameStore(state => state.participants)
 
   return (
-    <div className="flex flex-col relative px-4 gap-4">
+    <div className="absolute flex flex-col left-4 top-2 gap-8">
       {participants.map(participant => (
         <ParticipantCard key={participant.id} {...participant} />
       ))}

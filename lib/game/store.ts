@@ -110,17 +110,8 @@ export const useGameStore = create<GameState>()(
       participants: [
         {
           id: nanoid(),
-          name: 'Tonald Drump',
-          avatarUrl:
-            'https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?&w=128&h=128&dpr=2&q=80',
-          creativity: 0,
-          score: 0,
-          isCorrect: false
-        },
-        {
-          id: nanoid(),
           name: 'Melon Musk',
-          avatarUrl: 'https://github.com/shadcn.png',
+          avatarUrl: 'https://github.com/siisee11.png',
           creativity: 2,
           score: 0,
           isCorrect: false
@@ -128,8 +119,8 @@ export const useGameStore = create<GameState>()(
       ],
       keyword: '',
       remainingTime: 0,
-      // status: 'finished',
-      status: 'not-started',
+      status: 'playing',
+      // status: 'not-started',
       totalScore: 0,
       updateDrawing: (base64: string) => {
         set({ userDrawingBase64: base64 })

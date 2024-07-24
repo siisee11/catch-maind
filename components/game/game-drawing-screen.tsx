@@ -20,10 +20,8 @@ export function DrawingScreen() {
     }))
   const canvasRef = React.useRef<ReactSketchCanvasRef>(null)
   const [strokeWidth, setStrokeWidth] = useState(5)
-  const [eraserWidth, setEraserWidth] = useState(10)
+  const [eraserWidth, setEraserWidth] = useState(20)
   const [eraseMode, setEraseMode] = React.useState(false)
-
-  const [isCopied, setIsCopied] = React.useState(false)
 
   React.useEffect(() => {
     const fn = async () => {
@@ -65,31 +63,32 @@ export function DrawingScreen() {
     return base64Data
   }
 
-  const onCopy = async () => {
-    const dataUrl = await canvasRef.current?.exportImage('png')
-    if (dataUrl) {
-      const link = document.createElement('a')
-      link.href = dataUrl
-      link.download = 'image.png' // Specify the filename
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      setIsCopied(true)
-    }
-  }
+  // const onCopy = async () => {
+  //   const dataUrl = await canvasRef.current?.exportImage('png')
+  //   if (dataUrl) {
+  //     const link = document.createElement('a')
+  //     link.href = dataUrl
+  //     link.download = 'image.png' // Specify the filename
+  //     document.body.appendChild(link)
+  //     link.click()
+  //     document.body.removeChild(link)
+  //     setIsCopied(true)
+  //   }
+  // }
 
   return (
-    <div className="flex flex-col gap-2 rounded-lg border bg-background p-8">
-      <div className="flex flex-row gap-2 justify-center rounded-lg border bg-background p-4">
+    <div className="flex flex-col size-full gap-2 rounded-lg border bg-background p-4">
+      <div className="flex flex-row gap-2 justify-center rounded-lg border bg-background p-2">
         남은 시간: <span className="font-semibold">{remainingTime}(초)</span>
       </div>
-      <div className="flex flex-row gap-2 justify-center rounded-lg border bg-background p-4">
+      <div className="flex flex-row gap-2 justify-center rounded-lg border bg-background p-2">
         제시어: <span className="font-semibold">{keyword}</span>
       </div>
       <div className="flex flex-row gap-2 rounded-lg border bg-background p-1">
         <Button
           type="button"
           variant="ghost"
+          size="icon"
           disabled={!eraseMode}
           onClick={handlePenClick}
         >
@@ -98,6 +97,7 @@ export function DrawingScreen() {
         <Button
           variant="ghost"
           type="button"
+          size="icon"
           disabled={eraseMode}
           onClick={handleEraserClick}
         >
@@ -115,7 +115,12 @@ export function DrawingScreen() {
             eraseMode ? handleEraserWidthChange : handleStrokeWidthChange
           }
         />
-        <Button variant="ghost" type="button" onClick={handleEraseAllClick}>
+        <Button
+          variant="ghost"
+          type="button"
+          size="icon"
+          onClick={handleEraseAllClick}
+        >
           <IoMdRefresh />
         </Button>
       </div>
@@ -126,13 +131,9 @@ export function DrawingScreen() {
         canvasColor="transparent"
         strokeColor="#ffffff"
         strokeWidth={strokeWidth}
-        eraserWidth={strokeWidth}
+        eraserWidth={eraserWidth}
       />
       <div className="flex flex-row gap-2 rounded-lg border bg-background p-1">
-        <Button variant="ghost" size="icon" onClick={onCopy}>
-          {isCopied ? <IconCheck /> : <IconCopy />}
-          <span className="sr-only">Copy Image</span>
-        </Button>
         <Button variant="ghost" size="icon" onClick={prepareNext}>
           <TbPlayerTrackNextFilled />
           <span className="sr-only">Next</span>

@@ -13,18 +13,16 @@ export function GameFinishedScreen() {
   }))
 
   return (
-    <div className="w-full max-w-4xl px-4">
-      <div className="flex flex-col gap-2 rounded-lg border bg-background p-8">
-        <CatchMaindBannerImage width={250} height={200} />
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <AddScore />
-          <Leaderboard />
-        </div>
-        <Button className="w-100 mx-auto mt-8" size="lg" onClick={prepare}>
-          <FaPaintbrush className="mr-2 size-4" />
-          다시하기
-        </Button>
+    <div className="flex flex-col gap-2 rounded-lg border bg-background p-8">
+      <CatchMaindBannerImage />
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <AddScore />
+        <Leaderboard />
       </div>
+      <Button className="w-100 mx-auto mt-8" size="lg" onClick={prepare}>
+        <FaPaintbrush className="mr-2 size-4" />
+        다시하기
+      </Button>
     </div>
   )
 }

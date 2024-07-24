@@ -44,16 +44,10 @@ const AddScore: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-row justify-center">
+    <div className="flex flex-row justify-center w-full">
       <form onSubmit={handleSubmit}>
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Submit Your Score</CardTitle>
-            <CardDescription>
-              Enter your username to submit your score.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <Card className="w-full">
+          <CardContent className="space-y-4 p-6">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label>Your Score</Label>
