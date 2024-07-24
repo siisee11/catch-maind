@@ -119,8 +119,8 @@ export const useGameStore = create<GameState>()(
       ],
       keyword: '',
       remainingTime: 0,
-      status: 'playing',
-      // status: 'not-started',
+      // status: 'playing',
+      status: 'not-started',
       totalScore: 0,
       updateDrawing: (base64: string) => {
         set({ userDrawingBase64: base64 })
