@@ -15,6 +15,7 @@ import { SidebarMobile } from './sidebar-mobile'
 import { SidebarToggle } from './sidebar-toggle'
 import { ChatHistory } from './chat-history'
 import { Session } from '@/lib/types'
+import { useGameStore } from '@/lib/game/store'
 
 async function UserOrLogin() {
   const session = (await auth()) as Session

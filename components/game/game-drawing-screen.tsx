@@ -77,11 +77,9 @@ export function DrawingScreen() {
   // }
 
   return (
-    <div className="flex flex-col size-full gap-2 rounded-lg border bg-background p-4">
+    <div className="flex flex-col w-full gap-2 rounded-lg border bg-background p-4">
       <div className="flex flex-row gap-2 justify-center rounded-lg border bg-background p-2">
         남은 시간: <span className="font-semibold">{remainingTime}(초)</span>
-      </div>
-      <div className="flex flex-row gap-2 justify-center rounded-lg border bg-background p-2">
         제시어: <span className="font-semibold">{keyword}</span>
       </div>
       <div className="flex flex-row gap-2 rounded-lg border bg-background p-1">
@@ -125,9 +123,9 @@ export function DrawingScreen() {
         </Button>
       </div>
       <ReactSketchCanvas
+        className="w-full h-3/5"
+        height={'calc(100vh-80)'}
         ref={canvasRef}
-        width="100%"
-        height="600px"
         canvasColor="transparent"
         strokeColor="#ffffff"
         strokeWidth={strokeWidth}
