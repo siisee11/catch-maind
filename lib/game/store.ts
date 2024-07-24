@@ -34,7 +34,8 @@ export type Participant = {
 
   isCorrect: boolean
 
-  intervalId?: NodeJS.Timeout
+  bubbleTimeout?: NodeJS.Timeout
+  guessingIntervalId?: NodeJS.Timeout
 }
 
 export const GAME_STATUS = {
@@ -75,12 +76,29 @@ export const useGameStore = create<GameState>()(
       participantId: string,
       message: string,
       isCorrect: boolean
-    ) =>
+    ) => {
       set(state => {
         const participants = [...state.participants]
         participants.forEach(p => {
           if (p.id === participantId) {
             p.message = message
+
+            if (message) {
+              p.bubbleTimeout && clearTimeout(p.bubbleTimeout)
+              const bubbleTimeout = setTimeout(() => {
+                set(state => {
+                  const participants = [...state.participants]
+                  participants.forEach(p => {
+                    if (p.id === participantId) {
+                      p.message = undefined
+                    }
+                  })
+                  return { participants }
+                })
+              }, 3000)
+              p.bubbleTimeout = bubbleTimeout
+            }
+
             if (isCorrect) {
               p.isCorrect = isCorrect
               p.score = p.score + 1
@@ -89,6 +107,7 @@ export const useGameStore = create<GameState>()(
         })
         return { participants }
       })
+    }
 
     const clearGuessingIntervals = () => {
       const intervals = get().guessingIntervals
@@ -119,8 +138,8 @@ export const useGameStore = create<GameState>()(
       ],
       keyword: '',
       remainingTime: 0,
-      // status: 'playing',
-      status: 'not-started',
+      status: 'finished',
+      // status: 'not-started',
       totalScore: 0,
       updateDrawing: (base64: string) => {
         set({ userDrawingBase64: base64 })
@@ -187,13 +206,13 @@ export const useGameStore = create<GameState>()(
             randomBackoff
           )
           // Save the interval id for later clearing if needed
-          participant.intervalId = interval
+          participant.guessingIntervalId = interval
         })
 
         // Save all intervals in state for later clearing if needed
         set({
           guessingIntervals: participants
-            .map(p => p.intervalId)
+            .map(p => p.guessingIntervalId)
             .filter((e): e is Exclude<typeof e, undefined> => e !== undefined)
         })
       },

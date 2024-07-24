@@ -13,9 +13,9 @@ export function GameFinishedScreen() {
   }))
 
   return (
-    <div className="flex flex-col gap-2 rounded-lg border bg-background p-8">
+    <div className="flex flex-col size-full overflow-y-auto	gap-2 rounded-lg border bg-background p-4">
       <CatchMaindBannerImage />
-      <div className="flex flex-col gap-2 sm:flex-row">
+      <div className="flex flex-col gap-2 md:flex-row">
         <AddScore />
         <Leaderboard />
       </div>
