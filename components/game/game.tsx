@@ -40,7 +40,7 @@ export function Game({ id, className, session }: GameProps) {
 
   return (
     <div
-      className="relative group w-full overflow-auto pl-0 
+      className="relative group w-full overflow-auto 
       bg-gradient-to-r from-[#8B6BC2] to-[#3892DA]"
       ref={scrollRef}
     >
