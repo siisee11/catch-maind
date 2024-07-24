@@ -4,8 +4,7 @@ interface GameLayoutProps {
 
 export default async function GameLayout({ children }: GameLayoutProps) {
   return (
-    <div className="relative flex h-[calc(100vh_-_theme(spacing.12))] overflow-hidden">
-      {children}
-    </div>
+    // <div className="relative flex h-[calc(100vh_-_theme(spacing.12))] overflow-hidden">
+    <div className="relative flex h-screen overflow-hidden">{children}</div>
   )
 }

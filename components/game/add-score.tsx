@@ -44,39 +44,45 @@ const AddScore: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-row justify-center w-full">
-      <form onSubmit={handleSubmit}>
-        <Card className="w-full">
-          <CardContent className="space-y-4 p-6">
+    <Card className="w-full max-w-3xl">
+      <CardHeader className="flex items-center justify-between gap-4">
+        <CardTitle className="text-2xl">게임 결과</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-row justify-center w-full">
+          <form onSubmit={handleSubmit} className="w-full">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label>Your Score</Label>
+                <Label>점수</Label>
                 <div className="text-2xl font-bold">{totalScore}</div>
               </div>
-              {percentile !== null && (
-                <div className="flex items-center justify-between">
-                  <Label>Top </Label>
+              <div className="flex items-center justify-between">
+                <Label>상위</Label>
+                {percentile !== null && (
                   <div className="text-2xl font-bold">
                     {percentile.toFixed(2)}%
                   </div>
-                </div>
-              )}
-              <Label>Username</Label>
-              <Input
-                type="text"
-                id="username"
-                placeholder="Enter your username"
-                onChange={e => setName(e.target.value)}
-                required
-              />
+                )}
+              </div>
+
+              <Label>이름</Label>
+              <div className="flex flex-row gap-4">
+                <Input
+                  type="text"
+                  id="username"
+                  placeholder="Enter your username"
+                  onChange={e => setName(e.target.value)}
+                  required
+                />
+                <Button type="submit" className="w-30">
+                  제출
+                </Button>
+              </div>
             </div>
-            <Button type="submit" className="w-full">
-              Submit Score
-            </Button>
-          </CardContent>
-        </Card>
-      </form>
-    </div>
+          </form>
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 
