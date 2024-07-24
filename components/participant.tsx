@@ -12,7 +12,7 @@ export function ParticipantCard({
   isCorrect
 }: ParticipantProp) {
   return (
-    <div className={`relative z-50`}>
+    <div className={`relative`}>
       <Avatar>
         <AvatarImage src={avatarUrl} />
         <AvatarFallback>{name.at(0)}</AvatarFallback>
