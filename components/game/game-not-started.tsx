@@ -24,8 +24,7 @@ export function GameNotStartedScreen() {
   }, [])
 
   return (
-    <div className="flex flex-col justify-center gap-2 rounded-lg border bg-background p-8">
-      {/* <CatchMaindBannerImage /> */}
+    <div className="flex flex-col size-full justify-center gap-2 rounded-lg border bg-background p-4">
       <div className="wrapper">
         <svg
           width="100%"
