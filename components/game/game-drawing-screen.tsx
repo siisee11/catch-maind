@@ -123,7 +123,7 @@ export function DrawingScreen() {
         </Button>
       </div>
       <ReactSketchCanvas
-        className="w-full h-3/5"
+        className="size-full"
         height={'calc(100vh-80)'}
         ref={canvasRef}
         canvasColor="transparent"
