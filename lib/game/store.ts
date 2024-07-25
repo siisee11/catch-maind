@@ -10,15 +10,28 @@ import { create } from 'zustand'
 const CATETORIES = [
   'Korean Food',
   'American Food',
+  'Chinese Food',
+  'Japanese Food',
+  'Italian Food',
   'Food',
   'Drink',
-  'Film',
+  'Action Movie',
+  'Romance Movie',
+  'Korean Movie',
   'Geography',
+  'Country',
   'Sports',
   'History',
   'Famous People',
-  'Netflix',
+  'Famous Places',
+  'Landmark',
+  'Europe Landmark',
+  'North America Landmark',
+  'South America Landmark',
+  'Asia Landmark',
   'Animals',
+  'Insects',
+  'Clothing',
   'Halloween',
   'Christmas'
 ]
@@ -58,6 +71,7 @@ interface GameState {
   remainingTimer?: NodeJS.Timeout
   remainingTime: number
   keyword: string
+  usedWords: string[]
   status: GameStatus
 
   totalScore: number
@@ -137,6 +151,7 @@ export const useGameStore = create<GameState>()(
         }
       ],
       keyword: '',
+      usedWords: [],
       remainingTime: 0,
       // status: 'playing',
       status: 'not-started',
@@ -150,8 +165,12 @@ export const useGameStore = create<GameState>()(
         clearGuessingIntervals()
         const category =
           CATETORIES[Math.floor(Math.random() * CATETORIES.length)]
-        const res = await createKeyword(category)
-        set({ keyword: res.properties.keyword.ko, status: 'ready-to-play' })
+        const res = await createKeyword(category, get().usedWords)
+        set(state => ({
+          keyword: res.properties.keyword.ko,
+          status: 'ready-to-play',
+          usedWords: [...state.usedWords, res.properties.keyword.en]
+        }))
         get().play()
 
         // Initialize the game timer(3 minutes), after the time call finish
@@ -221,9 +240,13 @@ export const useGameStore = create<GameState>()(
         clearGuessingIntervals()
         const category =
           CATETORIES[Math.floor(Math.random() * CATETORIES.length)]
-        const res = await createKeyword(category)
+        const res = await createKeyword(category, get().usedWords)
         setTimeout(() => {
-          set({ keyword: res.properties.keyword.ko, status: 'ready-to-play' })
+          set(state => ({
+            keyword: res.properties.keyword.ko,
+            status: 'ready-to-play',
+            usedWords: [...state.usedWords, res.properties.keyword.en]
+          }))
           set(state => {
             const participants = [...state.participants]
             participants.forEach(p => {

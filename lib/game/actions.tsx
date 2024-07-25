@@ -48,12 +48,34 @@ export const isMessageResult = (
   return result.type === 'message'
 }
 
-export async function createKeyword(category: string): Promise<KeywordResult> {
+export async function createKeyword(
+  category: string,
+  usedWords: string[]
+): Promise<KeywordResult> {
   'use server'
 
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
+  const systemInstruction = `You are creative 'pictionary' game word generator.
+  The game word should be a single word and draw-able.
+  Be creative! Don't be so predictable like 'soccer' or 'mountain'.
+  You receive a category and generate a game word in that category.
+  You receive used words and avoid using them.
+  Your response must be a JSON object containing type and properties.
+  Use this JSON schema:
+{ 
+  "type": "keyword",
+  "properties": {
+    "keyword": { 
+        "ko": "keyword string in Korean"
+        "en": "keyword string in English"
+    }
+  }
+}
+  
+  `
   const model = genAI.getGenerativeModel({
     model: 'gemini-1.5-flash',
+    systemInstruction,
     generationConfig: {
       responseMimeType: 'application/json',
       temperature: 2,
@@ -61,21 +83,7 @@ export async function createKeyword(category: string): Promise<KeywordResult> {
       topP: 1
     }
   })
-  const prompt = `You are 'pictionary' game word generator. 
-  Create one word in ${category}. 
-  The keyword should be a single word and draw-able.
-  Be creative!
-  List 10 keywords that you can think of, and choose one of them.
-
-  your answer should be JSON object that has type and properties. using this JSON schema:
-{ "type": "keyword",
-  "properties": {
-    "keyword": { 
-        "ko": "keyword string in Korean"
-        "en": "keyword string in English"
-    }
-  }
-}`
+  const prompt = `category: ${category}. used words: ${usedWords.join(', ')}`
   console.log('prompt', prompt)
   const result = await model.generateContent([prompt])
   const res = JSON.parse(result.response.text()) as KeywordResult
