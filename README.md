@@ -1,3 +1,12 @@
+<a href="https://catch-maind.vercel.app/">
+  <img alt="Next.js 14 and App Router-ready AI chatbot." src="public/CatchMAInd Screens.png">
+  <h1 align="center">Catch Maind</h1>
+</a>
+
+<p align="center">
+  An AI integrated 'Pictionary' game
+</p>
+
 <p align="center">
   <a href="#features"><strong>Features</strong></a> ·
   <a href="#running-locally"><strong>Running locally</strong></a> ·
