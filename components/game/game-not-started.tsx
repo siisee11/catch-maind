@@ -24,8 +24,8 @@ export function GameNotStartedScreen() {
   }, [])
 
   return (
-    <div className="flex flex-col size-full justify-center gap-2 rounded-lg border bg-background p-4">
-      <div className="wrapper">
+    <div className="relative flex flex-col size-full justify-center rounded-lg border bg-background p-4">
+      <div className="wrapper mb-48">
         <svg
           width="100%"
           height="100%"
@@ -205,10 +205,14 @@ export function GameNotStartedScreen() {
         </svg>
       </div>
 
-      <Button className="w-100 mx-auto mt-8 mb-40" size="lg" onClick={prepare}>
-        <FaPaintbrush className="mr-2 size-4" />
-        시작하기
-      </Button>
+      <div className="absolute bottom-24 inset-x-0 flex flex-row justify-center">
+        <button
+          className="rounded-full bg-primary p-4 mx-auto text-xl font-bold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          onClick={prepare}
+        >
+          GO
+        </button>
+      </div>
     </div>
   )
 }
