@@ -19,8 +19,8 @@ export function DrawingScreen() {
       prepareNext: state.prepareNext
     }))
   const canvasRef = React.useRef<ReactSketchCanvasRef>(null)
-  const [strokeWidth, setStrokeWidth] = useState(5)
-  const [eraserWidth, setEraserWidth] = useState(20)
+  const [strokeWidth, setStrokeWidth] = useState(3)
+  const [eraserWidth, setEraserWidth] = useState(30)
   const [eraseMode, setEraseMode] = React.useState(false)
 
   React.useEffect(() => {
@@ -105,7 +105,7 @@ export function DrawingScreen() {
           type="range"
           className="form-range"
           min="1"
-          max="20"
+          max="40"
           step="1"
           id="strokeWidth"
           value={eraseMode ? eraserWidth : strokeWidth}
@@ -131,7 +131,7 @@ export function DrawingScreen() {
         strokeWidth={strokeWidth}
         eraserWidth={eraserWidth}
       />
-      <div className="flex flex-row gap-2 rounded-lg border bg-background p-1">
+      <div className="absolute p-1 bottom-1 right-1 flex flex-row gap-2 rounded-lg border bg-white/10  backdrop-blur-sm">
         <Button variant="ghost" size="icon" onClick={prepareNext}>
           <TbPlayerTrackNextFilled />
           <span className="sr-only">Next</span>
