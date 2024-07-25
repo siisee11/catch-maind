@@ -5,6 +5,7 @@ import { useGameStore } from '@/lib/game/store'
 import { CatchMaindBannerImage } from '@/components/catch-maind-banner'
 import { useEffect } from 'react'
 import './logo.css'
+import './scale-up-center.css'
 
 export function GameNotStartedScreen() {
   const { prepare } = useGameStore(state => ({
@@ -207,7 +208,7 @@ export function GameNotStartedScreen() {
 
       <div className="absolute bottom-24 inset-x-0 flex flex-row justify-center">
         <button
-          className="rounded-full bg-primary p-4 mx-auto text-xl font-bold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          className="scale-up-center rounded-full bg-primary p-4 mx-auto text-xl font-bold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           onClick={prepare}
         >
           GO

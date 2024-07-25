@@ -117,8 +117,8 @@ function IconCatchMaind({ className, ...props }: React.ComponentProps<'svg'>) {
           y2="587.479"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#8B6BC2" />
-          <stop offset="1" stop-color="#3892DA" />
+          <stop stopColor="#8B6BC2" />
+          <stop offset="1" stopColor="#3892DA" />
         </linearGradient>
       </defs>
     </svg>
