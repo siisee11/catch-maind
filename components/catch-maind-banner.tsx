@@ -189,8 +189,8 @@ export const CatchMaindBannerImage = () => {
           y2="244"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#8B6BC2" />
-          <stop offset="1" stop-color="#3892DA" />
+          <stop stopColor="#8B6BC2" />
+          <stop offset="1" stopColor="#3892DA" />
         </linearGradient>
         <linearGradient
           id="paint1_linear_2_8"
@@ -200,8 +200,8 @@ export const CatchMaindBannerImage = () => {
           y2="290"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#8B6BC2" />
-          <stop offset="1" stop-color="#3892DA" />
+          <stop stopColor="#8B6BC2" />
+          <stop offset="1" stopColor="#3892DA" />
         </linearGradient>
         <image
           id="image0_2_8"

@@ -132,8 +132,8 @@ function IconCatchMaind({ className, ...props }: React.ComponentProps<'svg'>) {
           y2="501.561"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#8B6BC2" />
-          <stop offset="1" stop-color="#3892DA" />
+          <stop stopColor="#8B6BC2" />
+          <stop offset="1" stopColor="#3892DA" />
         </linearGradient>
         <image
           id="image0_3_68"
