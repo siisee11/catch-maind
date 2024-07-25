@@ -56,13 +56,13 @@ export async function createKeyword(category: string): Promise<KeywordResult> {
     model: 'gemini-1.5-flash',
     generationConfig: {
       responseMimeType: 'application/json',
-      temperature: 1,
+      temperature: 2,
       topK: 64,
       topP: 1
     }
   })
-  const prompt = `I want to do 'picionary' game with my friends. 
-  Create one keyword of ${category}. 
+  const prompt = `You are 'pictionary' game word generator. 
+  Create one word in ${category}. 
   The keyword should be a single word and draw-able.
   Be creative!
   List 10 keywords that you can think of, and choose one of them.
