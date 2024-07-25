@@ -83,7 +83,8 @@ module.exports = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'scale-up-center':
-          'scale-up-center 1.5s cubic-bezier(0.190, 1.000, 0.220, 1.000) 1.5s both'
+          'scale-up-center 1.5s cubic-bezier(0.190, 1.000, 0.220, 1.000) 1.5s both',
+        'spin-slow': 'spin 4s linear infinite'
       }
     }
   },
