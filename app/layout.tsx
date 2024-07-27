@@ -13,8 +13,8 @@ export const metadata = {
     ? new URL(`https://${process.env.VERCEL_URL}`)
     : undefined,
   title: {
-    default: 'Catch mAInd',
-    template: `%s - Catch mAInd`
+    default: 'Catch maind',
+    template: `%s - Catch maind`
   },
   description: 'Catch mind with AI',
   icons: {
