@@ -71,7 +71,8 @@ interface GameState {
   remainingTimer?: NodeJS.Timeout
   remainingTime: number
   keyword: string
-  usedWords: string[]
+  usedWords: string[] // English
+  guessedWords: string[] // English
   status: GameStatus
 
   totalScore: number
@@ -152,6 +153,7 @@ export const useGameStore = create<GameState>()(
       ],
       keyword: '',
       usedWords: [],
+      guessedWords: [],
       remainingTime: 0,
       // status: 'preparing',
       status: 'not-started',
@@ -189,17 +191,27 @@ export const useGameStore = create<GameState>()(
         })
       },
       play: async () => {
-        set({ status: 'playing' })
+        set({ status: 'playing', guessedWords: [] })
         clearParticipantsMessages()
 
         // Function to handle the guessing logic for a participant
         const guessForParticipant = async (participant: Participant) => {
           const base64 = get().userDrawingBase64
           if (!base64) return
-          const { guessResult } = await guess(participant, base64)
+          const { guessResult } = await guess(
+            participant,
+            base64,
+            get().guessedWords
+          )
           if (get().status !== 'playing') return
           if (isGuessResult(guessResult) && guessResult.type === 'guess') {
             const answer = guessResult.properties.answer.ko
+            set({
+              guessedWords: [
+                ...get().guessedWords,
+                guessResult.properties.answer.en
+              ]
+            })
             const isAnswerCorrect = answer === get().keyword
             updateParticipant(participant.id, answer, isAnswerCorrect)
             if (isAnswerCorrect) {

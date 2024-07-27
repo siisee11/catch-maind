@@ -48,9 +48,12 @@ export const isMessageResult = (
   return result.type === 'message'
 }
 
+const RETRY_COUNT = 3
+
 export async function createKeyword(
   category: string,
-  usedWords: string[]
+  usedWords: string[],
+  retry?: boolean
 ): Promise<KeywordResult> {
   'use server'
 
@@ -85,33 +88,37 @@ export async function createKeyword(
   })
   const prompt = `category: ${category}. used words: ${usedWords.join(', ')}`
   console.log('prompt', prompt)
-  const result = await model.generateContent([prompt])
-  const res = JSON.parse(result.response.text()) as KeywordResult
-  return res
+
+  for (let i = 0; i < RETRY_COUNT; i++) {
+    try {
+      const result = await model.generateContent([prompt])
+      const res = JSON.parse(result.response.text()) as KeywordResult
+      return res
+    } catch (e) {
+      if (!retry) break
+      console.error(e)
+    }
+  }
+
+  throw new Error('Failed to generate keyword')
 }
 
 export async function guess(
   participant: Participant,
-  drawingBase64: string
+  drawingBase64: string,
+  previousGuesses: string[]
 ): Promise<{ id: string; guessResult: GuessResult | MessageResult }> {
   'use server'
 
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash',
-    generationConfig: {
-      responseMimeType: 'application/json',
-      temperature: participant.creativity ?? 1
-    }
-  })
-  const prompt = `Guess the given drawing. Give me just a single answer. 
-
-If you think the drawing is too hard to guess, you can ask for a hint or give direct feedback to the drawer.
-  
-using this JSON schema (object including type and properties):
-
-If you guess the answer:
-{ "type": "guess",
+  const systemInstruction = `You are a participant in a 'pictionary' game.
+  You receive a drawing and guess the word.
+  You receivv the words that have been used before.
+  If you think the drawing is too hard to guess, you can ask for a hint or give direct feedback to the drawer.
+  The response must be a JSON object containing type and properties.
+  Use this JSON schema:
+{
+  "type": "guess",
   "properties": {
     "answer": {
         "ko": "your answer string in Korean",
@@ -128,6 +135,17 @@ If you ask for a hint or give a feedback:
         "en": "your message in English"
     }
 }
+  `
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-1.5-flash',
+    systemInstruction,
+    generationConfig: {
+      responseMimeType: 'application/json',
+      temperature: participant.creativity ?? 1
+    }
+  })
+  const prompt = `
+Words that have been used before: ${previousGuesses.join(', ')}.
 `
   const imagePart: InlineDataPart = {
     inlineData: {
