@@ -21,12 +21,12 @@ export function GameNotStartedScreen() {
   }, [])
 
   return (
-    <div className="relative flex flex-col size-full justify-center rounded-lg border bg-background p-4">
-      <div className="wrapper mb-48">
+    <div className="relative flex flex-col size-full justify-center items-center rounded-lg border bg-background p-4">
+      <div className="wrapper mb-48 md:w-[500]">
         <CatchMaindLogo />
       </div>
 
-      <div className="absolute bottom-24 inset-x-0 flex flex-row justify-center">
+      <div className="absolute bottom-24 md:bottom-1/4 inset-x-0 flex flex-row justify-center">
         <button
           className="animate-scale-up-center rounded-full bg-primary p-4 mx-auto text-xl font-bold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           onClick={prepare}

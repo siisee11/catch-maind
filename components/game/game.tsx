@@ -47,7 +47,7 @@ export function Game({ id, className, session }: GameProps) {
       <div className="absolute inset-0 bg-black/75 z-0" />
       <div
         className={cn(
-          'flex flex-row size-full justify-center p-2 md:pt-10 z-10 relative',
+          'flex flex-row size-full justify-center p-2 md:p-10 z-10 relative',
           className
         )}
         ref={messagesRef}
