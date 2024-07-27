@@ -53,7 +53,7 @@ const RETRY_COUNT = 3
 export async function createKeyword(
   category: string,
   usedWords: string[],
-  retry?: boolean
+  retry: boolean = true
 ): Promise<KeywordResult> {
   'use server'
 
