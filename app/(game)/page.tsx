@@ -4,7 +4,7 @@ import { Session } from '@/lib/types'
 import { Game } from '@/components/game/game'
 
 export const metadata = {
-  title: 'Next.js AI Catch mind'
+  title: 'Catch mind'
 }
 
 export default async function GamePage() {
