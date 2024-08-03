@@ -40,7 +40,7 @@ export function DrawingScreen() {
         updateDrawing(base64)
       }
     }
-    const interval = setInterval(fn, 3000)
+    const interval = setInterval(fn, 2000)
     return () => clearInterval(interval)
   }, [])
 

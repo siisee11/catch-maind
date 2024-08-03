@@ -1,3 +1,6 @@
+import app from '@/lib/firebase/app'
+import { getStorage, ref, uploadString } from 'firebase/storage'
+
 import {
   createKeyword,
   guess,
@@ -218,6 +221,52 @@ export const useGameStore = create<GameState>()(
               set({
                 totalScore: get().totalScore + 1
               })
+
+              // Save drawing to firebase storage
+              const uploadDrawing = async (
+                base64Image: string,
+                filename: string
+              ) => {
+                const storage = getStorage(app)
+
+                try {
+                  // Remove the data URL prefix if present
+                  const base64WithoutPrefix = base64Image.replace(
+                    /^data:image\/\w+;base64,/,
+                    ''
+                  )
+
+                  const storageRef = ref(storage, `drawings/${filename}`)
+
+                  // Upload the base64 string
+                  const snapshot = await uploadString(
+                    storageRef,
+                    base64WithoutPrefix,
+                    'base64'
+                  )
+                  return new Response(JSON.stringify({ success: true }), {
+                    status: 200,
+                    headers: { 'Content-Type': 'application/json' }
+                  })
+                } catch (error) {
+                  console.error('Error uploading image:', error)
+                  return new Response(
+                    JSON.stringify({
+                      success: false,
+                      error: 'Failed to upload image'
+                    }),
+                    {
+                      status: 500,
+                      headers: { 'Content-Type': 'application/json' }
+                    }
+                  )
+                }
+              }
+              await uploadDrawing(
+                base64,
+                `${participant.id}-${new Date().toISOString()}-${get().totalScore}.png`
+              )
+
               get().prepareNext()
             }
           }
@@ -231,7 +280,7 @@ export const useGameStore = create<GameState>()(
         //   Schedule each participant's guessing with a random backoff time
         const participants = get().participants
         participants.forEach(participant => {
-          const randomBackoff = Math.floor(Math.random() * 10000) + 5000
+          const randomBackoff = Math.floor(Math.random() * 8000) + 5000
           const interval = setInterval(
             () => guessForParticipant(participant),
             randomBackoff
