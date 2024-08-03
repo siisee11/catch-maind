@@ -28,25 +28,10 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { IconTrophy } from '@/components/ui/icons'
 import React from 'react'
-
-interface LeaderboardEntry {
-  id: string
-  name: string
-  score: number
-}
+import { useLeaderboard } from '@/lib/query/use-leaderboard'
 
 export function Leaderboard() {
-  const [leaderboard, setLeaderboard] = React.useState<LeaderboardEntry[]>([])
-
-  React.useEffect(() => {
-    const fetchLeaderboard = async () => {
-      const response = await fetch('leaderboard')
-      const data = await response.json()
-      setLeaderboard(data)
-    }
-
-    fetchLeaderboard()
-  }, [])
+  const { leaderboard } = useLeaderboard()
 
   return (
     <Card className="w-full max-w-3xl">
@@ -67,7 +52,7 @@ export function Leaderboard() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {leaderboard.map((entry, index) => (
+            {(leaderboard ?? []).map((entry, index) => (
               <TableRow key={entry.id}>
                 <TableCell className="font-medium">{index + 1}</TableCell>
                 <TableCell>

@@ -1,16 +1,11 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent
-} from '@/components/ui/card'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { calculatePercentile } from '@/lib/firebase/leaderboard/actions'
 import { useGameStore } from '@/lib/game/store'
+import { useLeaderboard } from '@/lib/query/use-leaderboard'
 import { Label } from '@radix-ui/react-dropdown-menu'
 import React from 'react'
 import { useState } from 'react'
@@ -21,25 +16,19 @@ const AddScore: React.FC = () => {
   }))
   const [name, setName] = useState('')
   const [percentile, setPercentile] = useState<number | null>(null)
+  const { submitScore, isSubmitting } = useLeaderboard()
 
   React.useEffect(() => {
     const fetchPercentile = async () => {
       const calculatedPercentile = await calculatePercentile(totalScore)
       setPercentile(calculatedPercentile)
     }
-
     fetchPercentile()
   }, [totalScore])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    await fetch('/leaderboard', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ name, score: totalScore })
-    })
+    await submitScore({ name, score: totalScore })
     setName('')
   }
 
@@ -74,7 +63,7 @@ const AddScore: React.FC = () => {
                   onChange={e => setName(e.target.value)}
                   required
                 />
-                <Button type="submit" className="w-30">
+                <Button type="submit" className="w-30" disabled={isSubmitting}>
                   제출
                 </Button>
               </div>
