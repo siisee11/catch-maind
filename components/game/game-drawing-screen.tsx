@@ -3,7 +3,7 @@ import { TbPlayerTrackNextFilled } from 'react-icons/tb'
 import { FaPen, FaEraser } from 'react-icons/fa6'
 import { IoMdRefresh } from 'react-icons/io'
 import { IconCheck, IconClose, IconCopy } from '@/components/ui/icons'
-import React, { ChangeEvent, useState } from 'react'
+import React, { ChangeEvent, useState, useEffect } from 'react'
 
 import { ReactSketchCanvas, ReactSketchCanvasRef } from 'react-sketch-canvas'
 import { useGameStore } from '@/lib/game/store'
@@ -23,7 +23,16 @@ export function DrawingScreen() {
   const [eraserWidth, setEraserWidth] = useState(30)
   const [eraseMode, setEraseMode] = React.useState(false)
 
-  React.useEffect(() => {
+  const [isDarkMode, setIsDarkMode] = useState(true)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+      setIsDarkMode(mediaQuery.matches)
+    }
+  }, [])
+
+  useEffect(() => {
     const fn = async () => {
       const dataUrl = await canvasRef.current?.exportImage('png')
       if (dataUrl) {
@@ -126,8 +135,8 @@ export function DrawingScreen() {
         className="size-full"
         height={'calc(100vh-80)'}
         ref={canvasRef}
-        canvasColor="transparent"
-        strokeColor="#ffffff"
+        canvasColor={isDarkMode ? 'black' : 'white'}
+        strokeColor={isDarkMode ? 'white' : 'black'}
         strokeWidth={strokeWidth}
         eraserWidth={eraserWidth}
       />
